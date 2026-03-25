@@ -17,6 +17,7 @@ type DatabaseConfig struct {
 	User     string
 	Password string
 	DBName   string
+	SSLMode  bool
 }
 
 type ServerConfig struct {

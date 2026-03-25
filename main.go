@@ -8,9 +8,15 @@ import (
 )
 
 func main() {
-	_, err := driver.LoadConfig()
+	config, err := driver.LoadConfig()
 	if err != nil {
 		fmt.Println("Failed to load config: %w", err)
+		return
+	}
+
+	err = driver.StartDatabaseDriver(config)
+	if err != nil {
+		fmt.Println("Failed to start database: %w", err)
 		return
 	}
 
