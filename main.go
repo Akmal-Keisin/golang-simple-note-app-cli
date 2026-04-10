@@ -5,9 +5,17 @@ import (
 	"simple-note-app/driver"
 	"simple-note-app/helpers"
 	"simple-note-app/views"
+
+	"github.com/joho/godotenv"
 )
 
 func main() {
+
+	err := godotenv.Load()
+	if err != nil {
+		fmt.Println("Failed to load env variables: %w", err)
+	}
+
 	config, err := driver.LoadConfig()
 	if err != nil {
 		fmt.Println("Failed to load config: %w", err)

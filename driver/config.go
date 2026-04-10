@@ -1,40 +1,20 @@
 package driver
 
 import (
-	"fmt"
-
-	"github.com/spf13/viper"
+	"simple-note-app/config"
 )
 
 type AppConfig struct {
-	Database DatabaseConfig
-	Server   ServerConfig
-}
-
-type DatabaseConfig struct {
-	Host     string
-	Port     int
-	User     string
-	Password string
-	DBName   string
-	SSLMode  bool
-}
-
-type ServerConfig struct {
-	Port int
+	Server   config.ServerConfig
+	Database config.DatabaseConfig
 }
 
 func LoadConfig() (*AppConfig, error) {
-	viper.SetConfigType("json")
+	serverConfig := config.LoadServerConfig()
+	databaseConfig := config.LoadDatabaseConfig()
 
-	if err := viper.ReadInConfig(); err != nil {
-		return nil, fmt.Errorf("Failed to read config file: %w", err)
-	}
-
-	var cfg AppConfig
-	if err := viper.Unmarshal(&cfg); err != nil {
-		return nil, fmt.Errorf("Failed to unmarshal config: %w", err)
-	}
-
-	return &cfg, nil
+	return &AppConfig{
+		Server:   *serverConfig,
+		Database: *databaseConfig,
+	}, nil
 }

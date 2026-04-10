@@ -24,18 +24,13 @@ func StartDatabaseDriver(config *AppConfig) error {
 }
 
 func getDns(config *AppConfig) string {
-	sslMode := "disable"
-	if config.Database.SSLMode {
-		sslMode = "enable"
-	}
-
-	dsn := fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s sslmode=%s",
+	dsn := fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=%t",
 		config.Database.Host,
 		config.Database.Port,
-		config.Database.User,
+		config.Database.Username,
 		config.Database.Password,
-		config.Database.DBName,
-		sslMode,
+		config.Database.Database,
+		config.Database.SSLMode,
 	)
 
 	return dsn
