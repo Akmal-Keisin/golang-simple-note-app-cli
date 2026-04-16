@@ -3,24 +3,23 @@ package driver
 import (
 	"database/sql"
 	"fmt"
+
+	_ "github.com/jackc/pgx/v5/stdlib"
 )
 
 type DatabaseDriver struct {
 	DB *sql.DB
 }
 
-var DatabaseDriverInstance *DatabaseDriver
-
-func StartDatabaseDriver(config *AppConfig) error {
+func StartDatabaseDriver(config *AppConfig) (*DatabaseDriver, error) {
 	dns := getDns(config)
 
-	db, err := sql.Open("postgres", dns)
+	db, err := sql.Open("pgx", dns)
 	if err != nil {
-		return fmt.Errorf("Failed to connect to database: %w", err)
+		return nil, fmt.Errorf("Failed to connect to database: %w", err)
 	}
 
-	DatabaseDriverInstance = &DatabaseDriver{DB: db}
-	return nil
+	return &DatabaseDriver{DB: db}, nil
 }
 
 func getDns(config *AppConfig) string {

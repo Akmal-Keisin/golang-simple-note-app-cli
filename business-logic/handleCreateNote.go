@@ -1,25 +1,23 @@
 package businesslogic
 
 import (
-	"simple-note-app/model"
+	"simple-note-app/repositories"
 	"time"
 )
 
-func HandleCreateNote(title string, content string) {
+func (businessLogic *BusinessLogic) HandleCreateNote(title string, content string) (message string, err error) {
 	timestamp := time.Now().Format(time.RFC850)
 
-	newNoteId := 1;
-	lastNote := model.Notes[len(model.Notes)-1]
-	if lastNote.Id != 0 {
-		newNoteId = lastNote.Id + 1
-	}
-	
-	newNote := model.Note{
-		Id: newNoteId,
+	newNoteRequest := repositories.CreateNoteRequest{
 		Title:     title,
 		Content:   content,
 		CreatedAt: timestamp,
 	}
 
-	model.Notes = append(model.Notes, newNote)
+	newNote, err := businessLogic.repository.CreateNote(newNoteRequest)
+	if err != nil {
+		return "", err
+	}
+
+	return "Note created successfully with ID: " + string(newNote.Id), nil
 }

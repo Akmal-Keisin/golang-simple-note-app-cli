@@ -9,7 +9,7 @@ import (
 	"strings"
 )
 
-func Read() {
+func (n *NoteView) Read(flashMessage ...string) {
 	helpers.CallClear()
 	fmt.Println("Read Note")
 	for i, note := range model.Notes {
@@ -25,11 +25,11 @@ func Read() {
 	confirmBackReader := bufio.NewReader(os.Stdin)
 	fmt.Print("Press enter to go back to menu... ")
 	confirm, _ := confirmBackReader.ReadString('\n')
-	
+
 	if strings.TrimSpace(confirm) == "" {
-		Index()
+		n.Index()
 	} else {
 		fmt.Println("Invalid input, please try again.")
-		Read()
+		n.Read()
 	}
 }

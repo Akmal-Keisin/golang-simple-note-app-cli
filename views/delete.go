@@ -4,14 +4,13 @@ import (
 	"bufio"
 	"fmt"
 	"os"
-	businesslogic "simple-note-app/business-logic"
 	"simple-note-app/helpers"
 	"simple-note-app/model"
 	"strconv"
 	"strings"
 )
 
-func Delete() {
+func (n *NoteView) Delete(flashMessage ...string) {
 	helpers.CallClear()
 	fmt.Println("Delete Note")
 	for i, note := range model.Notes {
@@ -32,7 +31,7 @@ func Delete() {
 
 	if err != nil {
 		fmt.Println("Invalid Note ID")
-		Edit()
+		n.Edit()
 	}
 
 	findNote := model.Note{}
@@ -53,9 +52,9 @@ func Delete() {
 
 	if findNote.Id == 0 {
 		fmt.Println("Note not found")
-		Delete()
+		n.Delete()
 	}
-	
+
 	confirmDelete := bufio.NewReader(os.Stdin)
 	fmt.Print("You are about to delete this note, are you sure? (y/n): ")
 	confirm, _ := confirmDelete.ReadString('\n')
@@ -63,9 +62,9 @@ func Delete() {
 
 	if confirm != "y" {
 		fmt.Println("Note delete cancelled.")
-		Edit()
+		n.Edit()
 	}
 
-	businesslogic.HandleDeleteNote(findNote.Id)
-	Index("Note Deleted Successfully!")
+	n.businessLogic.HandleDeleteNote(findNote.Id)
+	n.Index("Note Deleted Successfully!")
 }

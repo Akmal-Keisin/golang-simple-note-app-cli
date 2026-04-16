@@ -2,7 +2,11 @@ package businesslogic
 
 import "simple-note-app/model"
 
-func HandleDeleteNote(noteId int) {
+func (businessLogic *BusinessLogic) HandleDeleteNote(noteId int) (message string, err error) {
+	// TODO: Validate if the note exists
+
+	// TODO: Delete the note using repository
+
 	indexToDelete := -1
 	for i, note := range model.Notes {
 		if note.Id == noteId {
@@ -14,4 +18,6 @@ func HandleDeleteNote(noteId int) {
 	if indexToDelete != -1 {
 		model.Notes = append(model.Notes[:indexToDelete], model.Notes[indexToDelete+1:]...)
 	}
+
+	return "", nil
 }

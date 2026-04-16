@@ -17,16 +17,16 @@ var menuOption = []string{
 	"Exit",
 }
 
-func Index(flashMessage ...string) {
+func (n *NoteView) Index(flashMessage ...string) {
 	helpers.CallClear()
 	if len(flashMessage) > 0 {
 		fmt.Println(flashMessage[0])
 	}
 
-	fmt.Println("NOTE APP - CLI");
-	
+	fmt.Println("NOTE APP - CLI")
+
 	for i, menu := range menuOption {
-		fmt.Printf("%d. %s\n", i + 1, menu);
+		fmt.Printf("%d. %s\n", i+1, menu)
 	}
 
 	reader := bufio.NewReader(os.Stdin)
@@ -41,13 +41,13 @@ func Index(flashMessage ...string) {
 	}
 
 	// Adjust the number to zero based index
-	number = number -1
-	
+	number = number - 1
+
 	// Check if the number is in the range of menu options
-	if (number < 0 || number > len(menuOption) - 1) {
+	if number < 0 || number > len(menuOption)-1 {
 		fmt.Println("Please enter number from menu list")
 	}
-	
+
 	// Check if the input is in the menu list
 	if item := menuOption[number]; item == "" {
 		fmt.Println("Please enter number from menu list")
@@ -56,13 +56,13 @@ func Index(flashMessage ...string) {
 
 	switch number {
 	case 0:
-		Create();
+		n.Create()
 	case 1:
-		Read();
+		n.Read()
 	case 2:
-		Edit();
+		n.Edit()
 	case 3:
-		Delete();
+		n.Delete()
 	case 4:
 		fmt.Println("Exiting...")
 		os.Exit(0)

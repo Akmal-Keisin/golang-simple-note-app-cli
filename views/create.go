@@ -4,22 +4,21 @@ import (
 	"bufio"
 	"fmt"
 	"os"
-	businesslogic "simple-note-app/business-logic"
 	"simple-note-app/helpers"
 	"strings"
 )
 
-func Create() {
+func (n *NoteView) Create(flashMessage ...string) {
 	helpers.CallClear()
 	fmt.Println("Create New Note")
 
-	titleReader := bufio.NewReader(os.Stdin)
 	fmt.Print("Enter Note Title: ")
+	titleReader := bufio.NewReader(os.Stdin)
 	title, _ := titleReader.ReadString('\n')
 	title = strings.TrimSpace(title)
 
-	contentReader := bufio.NewReader(os.Stdin)
 	fmt.Print("Enter Note Content: ")
+	contentReader := bufio.NewReader(os.Stdin)
 	content, _ := contentReader.ReadString('\n')
 	content = strings.TrimSpace(content)
 
@@ -28,16 +27,16 @@ func Create() {
 	fmt.Print("Content: ", content)
 	fmt.Println("Are you sure? (y/n)")
 
-	confirmReader := bufio.NewReader(os.Stdin)
 	fmt.Print("Confirm: ")
+	confirmReader := bufio.NewReader(os.Stdin)
 	confirm, _ := confirmReader.ReadString('\n')
 	confirm = strings.TrimSpace(confirm)
 
 	if confirm != "y" {
 		fmt.Println("Note creation cancelled.")
-		Index("Note creation cancelled.")
+		n.Index("Note creation cancelled.")
 	}
 
-	businesslogic.HandleCreateNote(title, content)
-	Index("Note Created Successfully!")
+	n.businessLogic.HandleCreateNote(title, content)
+	n.Index("Note Created Successfully!")
 }

@@ -4,7 +4,6 @@ import (
 	"bufio"
 	"fmt"
 	"os"
-	businesslogic "simple-note-app/business-logic"
 	"simple-note-app/helpers"
 	"simple-note-app/model"
 	"strconv"
@@ -12,7 +11,7 @@ import (
 	"time"
 )
 
-func Edit() {
+func (n *NoteView) Edit(flashMessage ...string) {
 	helpers.CallClear()
 	fmt.Println("Edit Note Note")
 	for i, note := range model.Notes {
@@ -32,7 +31,7 @@ func Edit() {
 
 	if err != nil {
 		fmt.Println("Invalid Note ID")
-		Edit()
+		n.Edit()
 	}
 
 	updatedNote := model.Note{}
@@ -57,27 +56,26 @@ func Edit() {
 			fmt.Print("New Content: ")
 			newContent, _ := editContent.ReadString('\n')
 			newContent = strings.TrimSpace(newContent)
-			
+
 			updatedNote.Id = note.Id
 			updatedNote.Title = newTitle
 			updatedNote.Content = newContent
 			updatedNote.CreatedAt = note.CreatedAt
 			updatedNote.UpdatedAt = time.Now().Format(time.RFC850)
-			break;
+			break
 		}
 	}
 
-	
 	confirmUpdate := bufio.NewReader(os.Stdin)
 	fmt.Print("You are about to update this note, are you sure? (y/n): ")
 	confirm, _ := confirmUpdate.ReadString('\n')
 	confirm = strings.TrimSpace(confirm)
-	
+
 	if confirm != "y" {
 		fmt.Println("Note update cancelled.")
-		Edit()
+		n.Edit()
 	}
 
-	businesslogic.HandleUpdateNote(noteIdInt, updatedNote)
-	Index("Note Updated Successfully!")
+	n.businessLogic.HandleUpdateNote(noteIdInt, updatedNote)
+	n.Index("Note Updated Successfully!")
 }
