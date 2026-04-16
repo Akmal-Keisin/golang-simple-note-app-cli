@@ -2,6 +2,7 @@ package views
 
 import (
 	"bufio"
+	"context"
 	"fmt"
 	"os"
 	"simple-note-app/helpers"
@@ -17,7 +18,7 @@ var menuOption = []string{
 	"Exit",
 }
 
-func (n *NoteView) Index(flashMessage ...string) {
+func (n *NoteView) Index(ctx context.Context, flashMessage ...string) {
 	helpers.CallClear()
 	if len(flashMessage) > 0 {
 		fmt.Println(flashMessage[0])
@@ -56,13 +57,13 @@ func (n *NoteView) Index(flashMessage ...string) {
 
 	switch number {
 	case 0:
-		n.Create()
+		n.Create(ctx)
 	case 1:
-		n.Read()
+		n.Read(ctx)
 	case 2:
-		n.Edit()
+		n.Edit(ctx)
 	case 3:
-		n.Delete()
+		n.Delete(ctx)
 	case 4:
 		fmt.Println("Exiting...")
 		os.Exit(0)

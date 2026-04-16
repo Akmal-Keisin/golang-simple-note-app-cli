@@ -2,13 +2,14 @@ package views
 
 import (
 	"bufio"
+	"context"
 	"fmt"
 	"os"
 	"simple-note-app/helpers"
 	"strings"
 )
 
-func (n *NoteView) Create(flashMessage ...string) {
+func (n *NoteView) Create(ctx context.Context, flashMessage ...string) {
 	helpers.CallClear()
 	fmt.Println("Create New Note")
 
@@ -34,9 +35,9 @@ func (n *NoteView) Create(flashMessage ...string) {
 
 	if confirm != "y" {
 		fmt.Println("Note creation cancelled.")
-		n.Index("Note creation cancelled.")
+		n.Index(ctx, "Note creation cancelled.")
 	}
 
-	n.businessLogic.HandleCreateNote(title, content)
-	n.Index("Note Created Successfully!")
+	n.businessLogic.HandleCreateNote(ctx, title, content)
+	n.Index(ctx, "Note Created Successfully!")
 }

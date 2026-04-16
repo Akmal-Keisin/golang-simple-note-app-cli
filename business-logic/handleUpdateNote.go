@@ -1,10 +1,11 @@
 package businesslogic
 
 import (
+	"context"
 	"simple-note-app/model"
 )
 
-func (businessLogic *BusinessLogic) HandleUpdateNote(noteId int, updatedNote model.Note) (message string, err error) {
+func (businessLogic *BusinessLogic) HandleUpdateNote(ctx context.Context, noteId int, updatedNote model.Note) (message string, err error) {
 
 	// TODO: Validate if the note exists
 

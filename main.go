@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	businesslogic "simple-note-app/business-logic"
 	"simple-note-app/driver"
@@ -13,28 +14,36 @@ import (
 
 func main() {
 
+	ctx := context.Background()
+
 	err := godotenv.Load()
 	if err != nil {
 		fmt.Println("Failed to load env variables: %w", err)
 	}
 
+	// Load all configurations
 	config, err := driver.LoadConfig()
 	if err != nil {
 		fmt.Println("Failed to load config: %w", err)
 		return
 	}
 
-	db, err := driver.StartDatabaseDriver(config)
+	// Start database connection pool
+	db, err := driver.StartDatabaseDriver(ctx, config)
 	if err != nil {
 		fmt.Println("Failed to start database: %w", err)
 		return
 	}
 
-	helpers.CallClear()
+	// Ensure the database connection is closed when the application exits
+	defer db.DB.Close()
 
 	// Dependency Injection
 	repository := repositories.NewRepository(db)
 	businessLogic := businesslogic.NewBusinessLogic(repository)
 	noteView := views.NewNoteView(businessLogic)
-	noteView.Index()
+
+	// Start the application
+	helpers.CallClear()
+	noteView.Index(ctx)
 }

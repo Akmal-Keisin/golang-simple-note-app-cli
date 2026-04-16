@@ -2,6 +2,7 @@ package views
 
 import (
 	"bufio"
+	"context"
 	"fmt"
 	"os"
 	"simple-note-app/helpers"
@@ -9,7 +10,7 @@ import (
 	"strings"
 )
 
-func (n *NoteView) Read(flashMessage ...string) {
+func (n *NoteView) Read(ctx context.Context, flashMessage ...string) {
 	helpers.CallClear()
 	fmt.Println("Read Note")
 	for i, note := range model.Notes {
@@ -27,9 +28,9 @@ func (n *NoteView) Read(flashMessage ...string) {
 	confirm, _ := confirmBackReader.ReadString('\n')
 
 	if strings.TrimSpace(confirm) == "" {
-		n.Index()
+		n.Index(ctx)
 	} else {
 		fmt.Println("Invalid input, please try again.")
-		n.Read()
+		n.Read(ctx)
 	}
 }

@@ -1,14 +1,15 @@
 package businesslogic
 
 import (
+	"context"
 	"simple-note-app/model"
 	"simple-note-app/repositories"
 )
 
 type BusinessLogicInterface interface {
-	HandleCreateNote(title string, content string) (message string, err error)
-	HandleUpdateNote(noteId int, updatedNote model.Note) (message string, err error)
-	HandleDeleteNote(noteId int) (message string, err error)
+	HandleCreateNote(ctx context.Context, title string, content string) (message string, err error)
+	HandleUpdateNote(ctx context.Context, noteId int, updatedNote model.Note) (message string, err error)
+	HandleDeleteNote(ctx context.Context, noteId int) (message string, err error)
 }
 
 type BusinessLogic struct {

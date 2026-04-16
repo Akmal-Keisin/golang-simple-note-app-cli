@@ -2,6 +2,7 @@ package views
 
 import (
 	"bufio"
+	"context"
 	"fmt"
 	"os"
 	"simple-note-app/helpers"
@@ -11,7 +12,7 @@ import (
 	"time"
 )
 
-func (n *NoteView) Edit(flashMessage ...string) {
+func (n *NoteView) Edit(ctx context.Context, flashMessage ...string) {
 	helpers.CallClear()
 	fmt.Println("Edit Note Note")
 	for i, note := range model.Notes {
@@ -31,7 +32,7 @@ func (n *NoteView) Edit(flashMessage ...string) {
 
 	if err != nil {
 		fmt.Println("Invalid Note ID")
-		n.Edit()
+		n.Edit(ctx)
 	}
 
 	updatedNote := model.Note{}
@@ -73,9 +74,9 @@ func (n *NoteView) Edit(flashMessage ...string) {
 
 	if confirm != "y" {
 		fmt.Println("Note update cancelled.")
-		n.Edit()
+		n.Edit(ctx)
 	}
 
-	n.businessLogic.HandleUpdateNote(noteIdInt, updatedNote)
-	n.Index("Note Updated Successfully!")
+	n.businessLogic.HandleUpdateNote(ctx, noteIdInt, updatedNote)
+	n.Index(ctx, "Note Updated Successfully!")
 }

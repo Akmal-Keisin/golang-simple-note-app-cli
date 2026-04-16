@@ -1,8 +1,11 @@
 package businesslogic
 
-import "simple-note-app/model"
+import (
+	"context"
+	"simple-note-app/model"
+)
 
-func (businessLogic *BusinessLogic) HandleDeleteNote(noteId int) (message string, err error) {
+func (businessLogic *BusinessLogic) HandleDeleteNote(ctx context.Context, noteId int) (message string, err error) {
 	// TODO: Validate if the note exists
 
 	// TODO: Delete the note using repository

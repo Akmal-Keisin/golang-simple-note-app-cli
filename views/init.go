@@ -1,13 +1,16 @@
 package views
 
-import businesslogic "simple-note-app/business-logic"
+import (
+	"context"
+	businesslogic "simple-note-app/business-logic"
+)
 
 type NoteViewInterface interface {
-	Index(flashMessage ...string)
-	Create(flashMessage ...string)
-	Read(flashMessage ...string)
-	Edit(flashMessage ...string)
-	Delete(flashMessage ...string)
+	Index(ctx context.Context, flashMessage ...string)
+	Create(ctx context.Context, flashMessage ...string)
+	Read(ctx context.Context, flashMessage ...string)
+	Edit(ctx context.Context, flashMessage ...string)
+	Delete(ctx context.Context, flashMessage ...string)
 }
 
 type NoteView struct {

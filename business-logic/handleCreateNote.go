@@ -1,11 +1,13 @@
 package businesslogic
 
 import (
+	"context"
+	"fmt"
 	"simple-note-app/repositories"
 	"time"
 )
 
-func (businessLogic *BusinessLogic) HandleCreateNote(title string, content string) (message string, err error) {
+func (businessLogic *BusinessLogic) HandleCreateNote(ctx context.Context, title string, content string) (message string, err error) {
 	timestamp := time.Now().Format(time.RFC850)
 
 	newNoteRequest := repositories.CreateNoteRequest{
@@ -19,5 +21,5 @@ func (businessLogic *BusinessLogic) HandleCreateNote(title string, content strin
 		return "", err
 	}
 
-	return "Note created successfully with ID: " + string(newNote.Id), nil
+	return fmt.Sprintf("Note created successfully with ID: %d", newNote.Id), nil
 }

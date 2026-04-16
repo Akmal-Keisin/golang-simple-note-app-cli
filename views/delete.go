@@ -2,6 +2,7 @@ package views
 
 import (
 	"bufio"
+	"context"
 	"fmt"
 	"os"
 	"simple-note-app/helpers"
@@ -10,7 +11,7 @@ import (
 	"strings"
 )
 
-func (n *NoteView) Delete(flashMessage ...string) {
+func (n *NoteView) Delete(ctx context.Context, flashMessage ...string) {
 	helpers.CallClear()
 	fmt.Println("Delete Note")
 	for i, note := range model.Notes {
@@ -31,7 +32,7 @@ func (n *NoteView) Delete(flashMessage ...string) {
 
 	if err != nil {
 		fmt.Println("Invalid Note ID")
-		n.Edit()
+		n.Edit(ctx)
 	}
 
 	findNote := model.Note{}
@@ -52,7 +53,7 @@ func (n *NoteView) Delete(flashMessage ...string) {
 
 	if findNote.Id == 0 {
 		fmt.Println("Note not found")
-		n.Delete()
+		n.Delete(ctx)
 	}
 
 	confirmDelete := bufio.NewReader(os.Stdin)
@@ -62,9 +63,9 @@ func (n *NoteView) Delete(flashMessage ...string) {
 
 	if confirm != "y" {
 		fmt.Println("Note delete cancelled.")
-		n.Edit()
+		n.Edit(ctx)
 	}
 
-	n.businessLogic.HandleDeleteNote(findNote.Id)
-	n.Index("Note Deleted Successfully!")
+	n.businessLogic.HandleDeleteNote(ctx, findNote.Id)
+	n.Index(ctx, "Note Deleted Successfully!")
 }
