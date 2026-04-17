@@ -32,6 +32,11 @@ func StartDatabaseDriver(ctx context.Context, config *AppConfig) (*DatabaseDrive
 		return nil, fmt.Errorf("Failed to ping database: %w", err)
 	}
 
+	// Pool configuration
+	db.SetMaxOpenConns(config.Database.MaxOpenConns)
+	db.SetMaxIdleConns(config.Database.MaxIdleConss)
+	db.SetConnMaxLifetime(time.Duration(config.Database.MaxConnLifetime) * time.Minute)
+
 	return &DatabaseDriver{DB: db}, nil
 }
 
