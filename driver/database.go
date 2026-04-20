@@ -41,7 +41,7 @@ func StartDatabaseDriver(ctx context.Context, config *AppConfig) (*DatabaseDrive
 }
 
 func getDsn(config *AppConfig) string {
-	dsn := fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=%t",
+	dsn := fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=%s",
 		config.Database.Host,
 		config.Database.Port,
 		config.Database.Username,

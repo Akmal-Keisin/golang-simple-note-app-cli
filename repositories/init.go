@@ -1,16 +1,17 @@
 package repositories
 
 import (
+	"context"
 	"simple-note-app/driver"
 	"simple-note-app/model"
 )
 
 type RepositoryInterface interface {
-	GetAllNotes() ([]model.Note, error)
-	FindNoteByID(id int) (*model.Note, error)
-	CreateNote(CreateNoteRequest) (*model.Note, error)
-	UpdateNote(UpdateNoteRequest) (*model.Note, error)
-	DeleteNote(id int) error
+	GetAllNotes(ctx context.Context) ([]model.Note, error)
+	FindNoteByID(ctx context.Context, id int) (*model.Note, error)
+	CreateNote(ctx context.Context, request CreateNoteRequest) (*model.Note, error)
+	UpdateNote(ctx context.Context, request UpdateNoteRequest) (*model.Note, error)
+	DeleteNote(ctx context.Context, id int) (*model.Note, error)
 }
 
 type Repository struct {

@@ -2,21 +2,27 @@ package businesslogic
 
 import (
 	"context"
-	"simple-note-app/model"
+	"fmt"
+	"simple-note-app/repositories"
+	"time"
 )
 
-func (businessLogic *BusinessLogic) HandleUpdateNote(ctx context.Context, noteId int, updatedNote model.Note) (message string, err error) {
+func (businessLogic *BusinessLogic) HandleUpdateNote(ctx context.Context, noteId int, title string, content string) (message string, err error) {
+	currentDate := time.Now().Format(time.DateOnly)
+	currentTime := time.Now().Format(time.TimeOnly)
 
-	// TODO: Validate if the note exists
-
-	// TODO: Update the note using repository
-
-	for i, note := range model.Notes {
-		if note.Id == noteId {
-			model.Notes[i] = updatedNote
-			break
-		}
+	updateNoteRequest := repositories.UpdateNoteRequest{
+		Id:        noteId,
+		Title:     title,
+		Content:   content,
+		UpdatedAt: fmt.Sprintf("%s %s", currentDate, currentTime),
 	}
 
-	return "", nil
+	updateNote, err := businessLogic.repository.UpdateNote(ctx, updateNoteRequest)
+	if err != nil {
+		return "", err
+	}
+
+	return fmt.Sprintf("Note updated successfully with ID: %d", updateNote.Id), nil
+
 }

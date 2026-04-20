@@ -6,20 +6,37 @@ import (
 	"fmt"
 	"os"
 	"simple-note-app/helpers"
-	"simple-note-app/model"
 	"strings"
 )
 
 func (n *NoteView) Read(ctx context.Context, flashMessage ...string) {
 	helpers.CallClear()
 	fmt.Println("Read Note")
-	for i, note := range model.Notes {
-		fmt.Printf("%s %d\n", "Note", i+1)
+
+	// Show all notes to let the user select a note to see the detail
+	notes, err := n.repository.GetAllNotes(ctx)
+	if err != nil {
+		fmt.Printf("An error occured: %v \n", err)
+		return
+	}
+
+	for _, note := range notes {
 		fmt.Printf("ID: %d\n", note.Id)
 		fmt.Printf("Title: %s\n", note.Title)
 		fmt.Printf("Content: %s\n", note.Content)
-		fmt.Printf("Created At: %s\n", note.CreatedAt)
-		fmt.Printf("Updated At: %s\n", note.UpdatedAt)
+
+		if note.CreatedAt != nil {
+			fmt.Printf("Created At: %s\n", *note.CreatedAt)
+		} else {
+			fmt.Println("Created At: -")
+		}
+
+		if note.UpdatedAt != nil {
+			fmt.Printf("Updated At: %s\n", *note.UpdatedAt)
+		} else {
+			fmt.Println("Updated At: -")
+		}
+
 		fmt.Println("===================================")
 	}
 

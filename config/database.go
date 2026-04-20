@@ -12,7 +12,7 @@ type DatabaseConfig struct {
 	Username        string
 	Password        string
 	Database        string
-	SSLMode         bool
+	SSLMode         string
 	MaxOpenConns    int
 	MaxIdleConss    int
 	MaxConnLifetime int
@@ -43,13 +43,7 @@ func LoadDatabaseConfig() *DatabaseConfig {
 
 	dbSSLMode := os.Getenv("DB_SSL_MODE")
 	if dbSSLMode == "" {
-		dbSSLMode = "false"
-	}
-
-	dbSSLModeBool, err := strconv.ParseBool(dbSSLMode)
-	if err != nil {
-		fmt.Println("Failed to parse DB_SSL_MODE to boolean: %w", err)
-		dbSSLModeBool = false
+		dbSSLMode = "disable"
 	}
 
 	maxOpenConns := os.Getenv("DB_MAX_OPEN_CONNS")
@@ -91,7 +85,7 @@ func LoadDatabaseConfig() *DatabaseConfig {
 		Username:        dbUsername,
 		Password:        dbPassword,
 		Database:        dbDatabase,
-		SSLMode:         dbSSLModeBool,
+		SSLMode:         dbSSLMode,
 		MaxOpenConns:    maxOpenConnsInt,
 		MaxIdleConss:    maxIdleConnsInt,
 		MaxConnLifetime: maxConnLifetimeInt,

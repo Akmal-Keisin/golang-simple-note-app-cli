@@ -14,13 +14,31 @@ import (
 func (n *NoteView) Delete(ctx context.Context, flashMessage ...string) {
 	helpers.CallClear()
 	fmt.Println("Delete Note")
-	for i, note := range model.Notes {
-		fmt.Printf("%s %d\n", "Note", i+1)
+
+	// Show all notes to let the user select a note to update
+	notes, err := n.repository.GetAllNotes(ctx)
+	if err != nil {
+		fmt.Println("An error occured")
+		return
+	}
+
+	for _, note := range notes {
 		fmt.Printf("ID: %d\n", note.Id)
 		fmt.Printf("Title: %s\n", note.Title)
 		fmt.Printf("Content: %s\n", note.Content)
-		fmt.Printf("Created At: %s\n", note.CreatedAt)
-		fmt.Printf("Updated At: %s\n", note.UpdatedAt)
+
+		if note.CreatedAt != nil {
+			fmt.Printf("Created At: %s\n", *note.CreatedAt)
+		} else {
+			fmt.Println("Created At: -")
+		}
+
+		if note.UpdatedAt != nil {
+			fmt.Printf("Updated At: %s\n", *note.UpdatedAt)
+		} else {
+			fmt.Println("Updated At: -")
+		}
+
 		fmt.Println("===================================")
 	}
 
@@ -36,14 +54,25 @@ func (n *NoteView) Delete(ctx context.Context, flashMessage ...string) {
 	}
 
 	findNote := model.Note{}
-	for _, note := range model.Notes {
+	for _, note := range notes {
 		if note.Id == noteIdInt {
 			helpers.CallClear()
 			fmt.Printf("You choosed Note ID %d\n", noteIdInt)
 			fmt.Printf("Title: %s\n", note.Title)
 			fmt.Printf("Content: %s\n", note.Content)
-			fmt.Printf("Created At: %s\n", note.CreatedAt)
-			fmt.Printf("Updated At: %s\n", note.UpdatedAt)
+
+			if note.CreatedAt != nil {
+				fmt.Printf("Created At: %s\n", *note.CreatedAt)
+			} else {
+				fmt.Println("Created At: -")
+			}
+
+			if note.UpdatedAt != nil {
+				fmt.Printf("Updated At: %s\n", *note.UpdatedAt)
+			} else {
+				fmt.Println("Updated At: -")
+			}
+
 			fmt.Println("===================================")
 			fmt.Println("Delete Note")
 			findNote = note
@@ -66,6 +95,10 @@ func (n *NoteView) Delete(ctx context.Context, flashMessage ...string) {
 		n.Edit(ctx)
 	}
 
-	n.businessLogic.HandleDeleteNote(ctx, findNote.Id)
-	n.Index(ctx, "Note Deleted Successfully!")
+	msg, err := n.businessLogic.HandleDeleteNote(ctx, findNote.Id)
+	if err != nil {
+		fmt.Printf("An error occured: %v \n", err)
+		return
+	}
+	n.Index(ctx, msg)
 }

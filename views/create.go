@@ -24,8 +24,8 @@ func (n *NoteView) Create(ctx context.Context, flashMessage ...string) {
 	content = strings.TrimSpace(content)
 
 	fmt.Println("You are trying to input note with")
-	fmt.Print("Title: ", title)
-	fmt.Print("Content: ", content)
+	fmt.Println("Title: ", title)
+	fmt.Println("Content: ", content)
 	fmt.Println("Are you sure? (y/n)")
 
 	fmt.Print("Confirm: ")
@@ -38,6 +38,11 @@ func (n *NoteView) Create(ctx context.Context, flashMessage ...string) {
 		n.Index(ctx, "Note creation cancelled.")
 	}
 
-	n.businessLogic.HandleCreateNote(ctx, title, content)
-	n.Index(ctx, "Note Created Successfully!")
+	msg, err := n.businessLogic.HandleCreateNote(ctx, title, content)
+	if err != nil {
+		fmt.Printf("An error occured: %v \n", err)
+		return
+	}
+
+	n.Index(ctx, msg)
 }

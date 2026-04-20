@@ -8,15 +8,16 @@ import (
 )
 
 func (businessLogic *BusinessLogic) HandleCreateNote(ctx context.Context, title string, content string) (message string, err error) {
-	timestamp := time.Now().Format(time.RFC850)
+	currentDate := time.Now().Format(time.DateOnly)
+	currentTime := time.Now().Format(time.TimeOnly)
 
 	newNoteRequest := repositories.CreateNoteRequest{
 		Title:     title,
 		Content:   content,
-		CreatedAt: timestamp,
+		CreatedAt: fmt.Sprintf("%s %s", currentDate, currentTime),
 	}
 
-	newNote, err := businessLogic.repository.CreateNote(newNoteRequest)
+	newNote, err := businessLogic.repository.CreateNote(ctx, newNoteRequest)
 	if err != nil {
 		return "", err
 	}

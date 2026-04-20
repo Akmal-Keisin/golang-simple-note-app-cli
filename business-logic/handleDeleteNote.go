@@ -2,25 +2,14 @@ package businesslogic
 
 import (
 	"context"
-	"simple-note-app/model"
+	"fmt"
 )
 
 func (businessLogic *BusinessLogic) HandleDeleteNote(ctx context.Context, noteId int) (message string, err error) {
-	// TODO: Validate if the note exists
-
-	// TODO: Delete the note using repository
-
-	indexToDelete := -1
-	for i, note := range model.Notes {
-		if note.Id == noteId {
-			indexToDelete = i
-			break
-		}
+	deletedNote, err := businessLogic.repository.DeleteNote(ctx, noteId)
+	if err != nil {
+		return "", err
 	}
 
-	if indexToDelete != -1 {
-		model.Notes = append(model.Notes[:indexToDelete], model.Notes[indexToDelete+1:]...)
-	}
-
-	return "", nil
+	return fmt.Sprintf("Note deleted successfully with ID: %d", deletedNote.Id), nil
 }

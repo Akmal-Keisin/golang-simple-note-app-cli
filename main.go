@@ -41,7 +41,7 @@ func main() {
 	// Dependency Injection
 	repository := repositories.NewRepository(db)
 	businessLogic := businesslogic.NewBusinessLogic(repository)
-	noteView := views.NewNoteView(businessLogic)
+	noteView := views.NewNoteView(businessLogic, repository)
 
 	// Start the application
 	helpers.CallClear()

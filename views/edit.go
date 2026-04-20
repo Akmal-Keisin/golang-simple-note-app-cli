@@ -6,21 +6,38 @@ import (
 	"fmt"
 	"os"
 	"simple-note-app/helpers"
-	"simple-note-app/model"
 	"strconv"
 	"strings"
-	"time"
 )
 
 func (n *NoteView) Edit(ctx context.Context, flashMessage ...string) {
 	helpers.CallClear()
 	fmt.Println("Edit Note Note")
-	for i, note := range model.Notes {
-		fmt.Printf("%s %d\n", "Note", i+1)
+
+	// Show all notes to let the user select a note to update
+	notes, err := n.repository.GetAllNotes(ctx)
+	if err != nil {
+		fmt.Println("An error occured")
+		return
+	}
+
+	for _, note := range notes {
 		fmt.Printf("ID: %d\n", note.Id)
 		fmt.Printf("Title: %s\n", note.Title)
 		fmt.Printf("Content: %s\n", note.Content)
-		fmt.Printf("Created At: %s\n", note.CreatedAt)
+
+		if note.CreatedAt != nil {
+			fmt.Printf("Created At: %s\n", *note.CreatedAt)
+		} else {
+			fmt.Println("Created At: -")
+		}
+
+		if note.UpdatedAt != nil {
+			fmt.Printf("Updated At: %s\n", *note.UpdatedAt)
+		} else {
+			fmt.Println("Updated At: -")
+		}
+
 		fmt.Println("===================================")
 	}
 
@@ -35,34 +52,45 @@ func (n *NoteView) Edit(ctx context.Context, flashMessage ...string) {
 		n.Edit(ctx)
 	}
 
-	updatedNote := model.Note{}
+	var newTitle string
+	var newContent string
 
-	for _, note := range model.Notes {
+	// Provide the user update input
+	for _, note := range notes {
 		if note.Id == noteIdInt {
 			helpers.CallClear()
 			fmt.Printf("You choosed Note ID %d\n", noteIdInt)
 			fmt.Printf("Title: %s\n", note.Title)
 			fmt.Printf("Content: %s\n", note.Content)
-			fmt.Printf("Created At: %s\n", note.CreatedAt)
-			fmt.Printf("Updated At: %s\n", note.UpdatedAt)
+
+			if note.CreatedAt != nil {
+				fmt.Printf("Created At: %s\n", *note.CreatedAt)
+			} else {
+				fmt.Println("Created At: -")
+			}
+
+			if note.UpdatedAt != nil {
+				fmt.Printf("Updated At: %s\n", *note.UpdatedAt)
+			} else {
+				fmt.Println("Updated At: -")
+			}
+
 			fmt.Println("===================================")
 			fmt.Println("Edit Note")
 
 			editTitle := bufio.NewReader(os.Stdin)
 			fmt.Print("New Title: ")
-			newTitle, _ := editTitle.ReadString('\n')
-			newTitle = strings.TrimSpace(newTitle)
+			selectedNewTitle, _ := editTitle.ReadString('\n')
+			selectedNewTitle = strings.TrimSpace(selectedNewTitle)
 
 			editContent := bufio.NewReader(os.Stdin)
 			fmt.Print("New Content: ")
-			newContent, _ := editContent.ReadString('\n')
-			newContent = strings.TrimSpace(newContent)
+			selectedNewContent, _ := editContent.ReadString('\n')
+			selectedNewContent = strings.TrimSpace(selectedNewContent)
 
-			updatedNote.Id = note.Id
-			updatedNote.Title = newTitle
-			updatedNote.Content = newContent
-			updatedNote.CreatedAt = note.CreatedAt
-			updatedNote.UpdatedAt = time.Now().Format(time.RFC850)
+			noteIdInt = note.Id
+			newTitle = selectedNewTitle
+			newContent = selectedNewContent
 			break
 		}
 	}
@@ -77,6 +105,10 @@ func (n *NoteView) Edit(ctx context.Context, flashMessage ...string) {
 		n.Edit(ctx)
 	}
 
-	n.businessLogic.HandleUpdateNote(ctx, noteIdInt, updatedNote)
-	n.Index(ctx, "Note Updated Successfully!")
+	msg, err := n.businessLogic.HandleUpdateNote(ctx, noteIdInt, newTitle, newContent)
+	if err != nil {
+		fmt.Printf("An error occured: %v \n", err)
+		return
+	}
+	n.Index(ctx, msg)
 }
