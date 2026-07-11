@@ -28,6 +28,12 @@ func main() {
 		return
 	}
 
+	fmt.Printf("DB_HOST=%s\n", config.Database.Host)
+	fmt.Printf("DB_PORT=%s\n", config.Database.Port)
+	fmt.Printf("DB_USERNAME=%s\n", config.Database.Username)
+	fmt.Printf("DB_DATABASE=%s\n", config.Database.Database)
+	fmt.Printf("DB_SSL_MODE=%s\n", config.Database.SSLMode)
+
 	// Start database connection pool
 	db, err := driver.StartDatabaseDriver(ctx, config)
 	if err != nil {
@@ -37,6 +43,62 @@ func main() {
 
 	// Ensure the database connection is closed when the application exits
 	defer db.DB.Close()
+
+	// for debug purpose
+	var databaseName string
+	var schemaName string
+	var username string
+
+	err = db.DB.QueryRowContext(ctx, "SELECT current_database(), current_schema(), current_user").Scan(
+		&databaseName,
+		&schemaName,
+		&username,
+	)
+
+	if err != nil {
+		fmt.Printf("Failed to inspect DB connection: %v\n", err)
+		return
+	}
+
+	fmt.Printf("Connected database: %s\n", databaseName)
+	fmt.Printf("Current schema: %s\n", schemaName)
+	fmt.Printf("Current user: %s\n", username)
+	rows, err := db.DB.QueryContext(ctx, `
+		SELECT table_schema, table_name
+		FROM information_schema.tables
+		WHERE table_name = 'notes'
+	`)
+	if err != nil {
+		fmt.Printf("Failed to inspect tables: %v\n", err)
+		return
+	}
+	defer rows.Close()
+
+	foundNotesTable := false
+
+	for rows.Next() {
+		foundNotesTable = true
+
+		var schema string
+		var table string
+
+		err := rows.Scan(&schema, &table)
+		if err != nil {
+			fmt.Printf("Failed to scan table info: %v\n", err)
+			return
+		}
+
+		fmt.Printf("Found table: %s.%s\n", schema, table)
+	}
+
+	if err := rows.Err(); err != nil {
+		fmt.Printf("Error while reading table inspection result: %v\n", err)
+		return
+	}
+
+	if !foundNotesTable {
+		fmt.Println("No notes table found in the currently connected database.")
+	}
 
 	// Dependency Injection
 	repository := repositories.NewRepository(db)
