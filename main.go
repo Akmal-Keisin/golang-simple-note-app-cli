@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	businesslogic "simple-note-app/business-logic"
+	"simple-note-app/config"
 	"simple-note-app/driver"
 	"simple-note-app/helpers"
 	"simple-note-app/repositories"
@@ -22,20 +23,22 @@ func main() {
 	}
 
 	// Load all configurations
-	config, err := driver.LoadConfig()
+	appConfig, err := driver.LoadConfig()
 	if err != nil {
 		fmt.Println("Failed to load config: %w", err)
 		return
 	}
 
-	fmt.Printf("DB_HOST=%s\n", config.Database.Host)
-	fmt.Printf("DB_PORT=%s\n", config.Database.Port)
-	fmt.Printf("DB_USERNAME=%s\n", config.Database.Username)
-	fmt.Printf("DB_DATABASE=%s\n", config.Database.Database)
-	fmt.Printf("DB_SSL_MODE=%s\n", config.Database.SSLMode)
+	if appConfig.Server.Env == config.EnvDevelopment || appConfig.Server.Env == config.EnvLocal {
+		fmt.Printf("DB_HOST=%s\n", appConfig.Database.Host)
+		fmt.Printf("DB_PORT=%s\n", appConfig.Database.Port)
+		fmt.Printf("DB_USERNAME=%s\n", appConfig.Database.Username)
+		fmt.Printf("DB_DATABASE=%s\n", appConfig.Database.Database)
+		fmt.Printf("DB_SSL_MODE=%s\n", appConfig.Database.SSLMode)
+	}
 
 	// Start database connection pool
-	db, err := driver.StartDatabaseDriver(ctx, config)
+	db, err := driver.StartDatabaseDriver(ctx, appConfig)
 	if err != nil {
 		fmt.Println("Failed to start database: %w", err)
 		return
@@ -60,9 +63,12 @@ func main() {
 		return
 	}
 
-	fmt.Printf("Connected database: %s\n", databaseName)
-	fmt.Printf("Current schema: %s\n", schemaName)
-	fmt.Printf("Current user: %s\n", username)
+	if appConfig.Server.Env == config.EnvDevelopment || appConfig.Server.Env == config.EnvLocal {
+		fmt.Printf("Connected database: %s\n", databaseName)
+		fmt.Printf("Current schema: %s\n", schemaName)
+		fmt.Printf("Current user: %s\n", username)
+	}
+
 	rows, err := db.DB.QueryContext(ctx, `
 		SELECT table_schema, table_name
 		FROM information_schema.tables

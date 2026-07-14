@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"fmt"
 	"net/url"
+	"simple-note-app/config"
 	"time"
 
 	_ "github.com/jackc/pgx/v5/stdlib"
@@ -14,17 +15,19 @@ type DatabaseDriver struct {
 	DB *sql.DB
 }
 
-func StartDatabaseDriver(ctx context.Context, config *AppConfig) (*DatabaseDriver, error) {
-	dsn := getDsn(config)
+func StartDatabaseDriver(ctx context.Context, appConfig *AppConfig) (*DatabaseDriver, error) {
+	dsn := getDsn(appConfig)
 
-	fmt.Printf(
-		"Connecting with DSN: host=%s port=%s user=%s dbname=%s sslmode=%s\n",
-		config.Database.Host,
-		config.Database.Port,
-		config.Database.Username,
-		config.Database.Database,
-		config.Database.SSLMode,
-	)
+	if appConfig.Server.Env == config.EnvDevelopment || appConfig.Server.Env == config.EnvLocal {
+		fmt.Printf(
+			"Connecting with DSN: host=%s port=%s user=%s dbname=%s sslmode=%s\n",
+			appConfig.Database.Host,
+			appConfig.Database.Port,
+			appConfig.Database.Username,
+			appConfig.Database.Database,
+			appConfig.Database.SSLMode,
+		)
+	}
 
 	db, err := sql.Open("pgx", dsn)
 	if err != nil {
@@ -43,23 +46,23 @@ func StartDatabaseDriver(ctx context.Context, config *AppConfig) (*DatabaseDrive
 	}
 
 	// Pool configuration
-	db.SetMaxOpenConns(config.Database.MaxOpenConns)
-	db.SetMaxIdleConns(config.Database.MaxIdleConss)
-	db.SetConnMaxLifetime(time.Duration(config.Database.MaxConnLifetime) * time.Minute)
+	db.SetMaxOpenConns(appConfig.Database.MaxOpenConns)
+	db.SetMaxIdleConns(appConfig.Database.MaxIdleConss)
+	db.SetConnMaxLifetime(time.Duration(appConfig.Database.MaxConnLifetime) * time.Minute)
 
 	return &DatabaseDriver{DB: db}, nil
 }
 
-func getDsn(config *AppConfig) string {
+func getDsn(appConfig *AppConfig) string {
 	dsn := &url.URL{
 		Scheme: "postgres",
-		User:   url.UserPassword(config.Database.Username, config.Database.Password),
-		Host:   fmt.Sprintf("%s:%s", config.Database.Host, config.Database.Port),
-		Path:   config.Database.Database,
+		User:   url.UserPassword(appConfig.Database.Username, appConfig.Database.Password),
+		Host:   fmt.Sprintf("%s:%s", appConfig.Database.Host, appConfig.Database.Port),
+		Path:   appConfig.Database.Database,
 	}
 
 	query := dsn.Query()
-	query.Set("sslmode", config.Database.SSLMode)
+	query.Set("sslmode", appConfig.Database.SSLMode)
 	dsn.RawQuery = query.Encode()
 
 	return dsn.String()

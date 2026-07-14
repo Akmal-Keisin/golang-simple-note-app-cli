@@ -15,6 +15,10 @@ func (repository *Repository) GetAllNotes(ctx context.Context) ([]model.Note, er
 		return nil, fmt.Errorf("Failed to get all notes : %v", err)
 	}
 
+	if rows.Err() != nil {
+		return nil, fmt.Errorf("Failed to get all notes : %v", err)
+	}
+
 	defer rows.Close()
 
 	notes := []model.Note{}
